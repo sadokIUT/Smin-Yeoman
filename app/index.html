@@ -1,0 +1,204 @@
+<!doctype html>
+<html class="no-js" lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Test iut</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <!-- Place favicon.ico in the root directory -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="node_modules/popper.js/popper.min.js"></script>
+    <!-- build:css styles/vendor.css -->
+    <!-- bower:css -->
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- build:css styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
+    
+    <!-- build:js scripts/vendor/modernizr.js -->
+    <script src="/bower_components/modernizr/modernizr.js"></script>
+    <!-- endbuild -->
+  </head>
+  <body>
+
+    <!-- Navigation -->
+
+    <!-- Header -->
+    <header class="masthead">
+      <div class="container">
+        <a href="javascript:void(0);"><img class="img-fluid" src="img/8bit.gif" alt="head"></a>
+      </div>
+    </header>
+<!-- Button trigger modal -->     
+<ul id="listChar"></ul> 
+<button id="pagePrev" class="btn btn-primary">Page precedente</button>    
+<button id="pageNext" class="btn btn-primary">Page suivante</button>    
+
+
+<!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="donnee"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+    <!-- Portfolio Grid Section -->
+    <section id="portfolio">
+      <div class="container">
+        <h2 class="text-center">Quelques gif</h2>
+        <hr class="star-primary">
+        <div class="row">
+          <div class="col-sm-4 portfolio-item">
+              <a href="javascript:void(0);"><img class="img-fluid" src="img/9bit.gif" alt="La street"></a>
+              <div class="text-center">
+              hi
+              </div>
+          </div>
+          <div class="col-sm-4 portfolio-item">
+              <a href="javascript:void(0);"><img class="img-fluid" src="img/10bit.gif" alt="kkdunet"></a>
+              <div class="text-center">
+              hi
+              </div>
+          </div>
+          <div class="col-sm-4 portfolio-item">
+              <a href="javascript:void(0);"><img class="img-fluid" src="img/11bit.gif" alt="ww"></a>
+              <div class="text-center">
+              hi
+              </div>
+          </div>
+        </div>
+      </div>
+    </section>
+          <h2 id="output"></h2>
+
+    <!-- build:js scripts/vendor.js -->
+    <!-- bower:js -->
+    <script src="/bower_components/jquery/dist/jquery.js"></script>
+    <script src="/bower_components/modernizr/modernizr.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+    
+    <!-- build:js scripts/plugins.js -->
+    <!-- endbuild -->
+    
+    <!-- build:js scripts/main.js -->
+    <script src="scripts/main.js"></script>
+    <!-- endbuild -->
+  </body>
+</html>
+ <script type="text/javascript">
+    $(document).ready(function () {
+      $("#portfolio a").mouseover(function(e) {
+            e.preventDefault();
+
+            var src = $(this).attr("img");
+            var alt = $(this).children().attr("alt");
+
+            console.log(alt);
+        });
+      $.getJSON('https://swapi.co/api/people/1/?format=json', function(data) {
+        var name = data["name"];
+        var output = document.getElementById('output');
+        output.innerHTML= name;
+      });
+
+      var prev, next;
+      var ul= $("#listChar");
+
+      getList('https://swapi.co/api/people');
+
+
+      $('#pageNext').on('click', function(){
+        ul.empty();
+        getList(next); 
+      })
+      $('#pagePrev').on('click', function(){
+        ul.empty();
+        getList(prev); 
+      })
+
+
+
+      $('#exampleModal').on('show.bs.modal', function(e){
+        var detail = $(this).find('#donnee');
+        var title = $(this).find('#exampleModalLabel');
+        detail.empty();
+        title.empty();
+        var relatedTarget = $(e.relatedTarget);
+        var url = relatedTarget.attr('href');
+        $.getJSON(url, function(data){
+          var sortData = {
+            'Taille': data.height,
+            'Couleur de cheveux': data.hair_color,
+          }
+          title.append(data.name);
+            $.each(sortData,function (index, value){
+
+              detail.append("<p>"+index+": "+value+"</p>");
+
+            })
+        })
+      })
+      
+
+
+
+      var bounce = new Bounce();
+      bounce.rotate({
+        from: 180,
+        to: 0
+      });
+      bounce.applyTo($(".img-fluid"));
+
+      function getList (url){
+      $.getJSON(url)
+      .done(function( data ) {
+        $('#pagePrev').show()
+        $('#pageNext').show()
+
+        var ul= $("#listChar");
+
+        next = data.next
+        prev = data.previous
+        if (prev == null){
+          $('#pagePrev').hide()
+        }
+        if (next == null){
+          $('#pageNext').hide()
+        }
+
+        $.each(data.results, function(index, character){
+          var li = "<li>"+createUrl(character.name, character.url)+"</li>";
+          ul.append(li);
+        });
+      })
+    }
+  });
+    
+
+
+    function createUrl (name, url){
+      return '<a href="'+url+'" data-toggle="modal" data-target="#exampleModal">'+name+'</a>'
+    }
+
+  </script>
